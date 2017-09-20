@@ -15,9 +15,13 @@ export class HomeComponent {
 
   public analyse() {
     let ipcRenderer = this.electronServices.ipcRenderer;
-    ipcRenderer.send('startProcess', 'hello');
+    let data = {
+      DDI: this.DDI,
+      DDD: this.DDD
+    };
+    ipcRenderer.send('startProcess', data);
   }
 
-  
+
 
 }

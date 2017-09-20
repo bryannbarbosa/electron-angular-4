@@ -45,6 +45,7 @@
     "@angular/router": "4.3.5",
     "core-js": "2.4.1",
     "enhanced-resolve": "3.3.0",
+    "exceljs": "^0.6.0",
     "photonkit": "^0.1.2",
     "rxjs": "5.4.3",
     "zone.js": "0.8.17"

@@ -1,8 +1,11 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as electron from 'electron';
 import * as path from 'path';
+import * as fs from 'fs';
 
+const Excel = require('exceljs');
 const ipcMain = electron.ipcMain;
+const dialog = electron.dialog;
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -73,7 +76,53 @@ try {
 }
 
 ipcMain.on('startProcess', (event, args) => {
-  console.log('Here');
+  dialog.showOpenDialog({filters: [
+      {name: 'Planilhas do Excel', extensions: ['xlsx']}
+    ]},(fileNames) => {
+      if(fileNames === undefined) {
+          console.log('Nenhum arquivo executado');
+          return;
+      }
+      const workbook = new Excel.Workbook();
+      workbook.xlsx.readFile(fileNames[0])
+      .then(function() {
+        let worksheet = workbook.getWorksheet(1);
+        let arr:number[] = [70, 77, 78, 79];
+        let ddi = String(args.DDI);
+        let ddd = String(args.DDD);
+
+        for(let i = 1; i <= worksheet.rowCount; i++) {
+          let row = worksheet.getRow(i);
+          let value = String(row.getCell(1).value);
+          value = value.trim();
+          value = value.replace(/\s/g, '');
+          value = value.replace(/[`a-zA-Z~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+          row.getCell(1).value = value;
+          row.commit();
+          let length = String(row.getCell(1).value).length;
+
+          if(length == 8 && arr.indexOf(Number(value.substr(0,2))) > -1) {
+            console.log('55' + '11' + value);
+            console.log(length + ' length');
+          }
+          else if(length == 8 && arr.indexOf(Number(value.substr(0,2))) <= -1) {
+            console.log('55' + '11' + '9' + value);
+            console.log(length + ' length');
+          }
+
+          if(length == 9) {
+           console.log('55' + '11' + value);
+          }
+
+          if(length == 10 && arr.indexOf(Number(value.substr(2,2))) > -1) {
+            console.log('55' + value);
+          }
+
+          else if(length == 10 && arr.indexOf(Number(value.substr(2,2))) <= -1) {
+            let sub = value.substr(0,2) + '9' + value.substr(2);
+            console.log('55' + sub);
+          }
+        }
+      });
+    });
 });
-
-
