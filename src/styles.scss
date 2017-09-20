@@ -1,7 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import '../node_modules/photonkit/dist/css/photon.css';
+
 html, body {
   margin: 0;
   padding: 0;
+}
 
+.container {
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.form-control {
+  box-shadow: 0 0 0 7px rgba(109,179,253,0);
+
+  &:focus {
+      box-shadow: 0 0 0 1px rgba(109,179,253,0.8);
+      transition: box-shadow 250ms ease-out;
+      cursor: text;
+  }
+}
+
+.btn-block {
+  width: 100% !important;
 }

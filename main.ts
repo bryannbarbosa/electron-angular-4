@@ -1,5 +1,8 @@
 import { app, BrowserWindow, screen } from 'electron';
+import * as electron from 'electron';
 import * as path from 'path';
+
+const ipcMain = electron.ipcMain;
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -68,3 +71,9 @@ try {
   // Catch Error
   // throw e;
 }
+
+ipcMain.on('startProcess', (event, args) => {
+  console.log('Here');
+});
+
+

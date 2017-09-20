@@ -1,5 +1,17 @@
-<div class="container">
-  <h1 class="title">
-    {{title}}
-  </h1>
+<div class="window">
+  <div class="container">
+    <h1>SMS database filter</h1>
+    <div class="form-group">
+      <label for="DDI">Insira seu número de DDI</label>
+      <input type="number" id="DDI" [(ngModel)]="DDI" name="DDI" min="10" class="form-control">
+    </div>
+    <div class="form-group">
+      <label for="DDD">Insira seu número de DDD</label>
+      <input type="number" id="DDD" [(ngModel)]="DDD" name="DDD" min="10" class="form-control">
+    </div>
+    <div class="form-group">
+        <button class="btn btn-large btn-default btn-block" (click)="analyse()">Selecione seu arquivo</button>
+    </div>
+  </div>
 </div>
+
