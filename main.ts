@@ -13,10 +13,57 @@ serve = args.some(val => val === '--serve');
 
 if (serve) {
   require('electron-reload')(__dirname, {
+    electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
+    hardResetMethod: 'exit'
   });
 }
 
+const squirrelUrl = "http://localhost:3333";
+
+const startAutoUpdater = (squirrelUrl) => {
+  // The Squirrel application will watch the provided URL
+  electron.autoUpdater.setFeedURL(`${squirrelUrl}/win64/`);
+
+  // Display a success message on successful update
+  electron.autoUpdater.addListener("update-downloaded", (event, releaseNotes, releaseName) => {
+    electron.dialog.showMessageBox({"message": `The release ${releaseName} has been downloaded`});
+  });
+
+  // Display an error message on update error
+  electron.autoUpdater.addListener("error", (error) => {
+    electron.dialog.showMessageBox({"message": "Auto updater error: " + error});
+  });
+
+  // tell squirrel to check for updates
+  electron.autoUpdater.checkForUpdates();
+}
+
+const handleSquirrelEvent = () => {
+  if (process.argv.length === 1) {
+    return false;
+  }
+
+  const squirrelEvent = process.argv[1];
+  switch (squirrelEvent) {
+    case '--squirrel-install':
+    case '--squirrel-updated':
+    case '--squirrel-uninstall':
+      setTimeout(app.quit, 1000);
+      return true;
+
+    case '--squirrel-obsolete':
+      app.quit();
+      return true;
+  }
+}
+
+if (handleSquirrelEvent()) {
+  // squirrel event handled and app will exit in 1000ms, so don't do anything else
+}
+
 function createWindow() {
+
+  if (process.env.NODE_ENV !== "dev") startAutoUpdater(squirrelUrl);
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
