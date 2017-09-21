@@ -90,6 +90,10 @@ ipcMain.on('startProcess', (event, args) => {
       .then(function() {
         let worksheet = workbook.getWorksheet(1);
         let arr: number[] = [70, 77, 78, 79];
+
+        for(let i = 10; i < 50; i++) {
+          arr.push(i);
+        }
         let ddi = String(args.DDI);
         let ddd = String(args.DDD);
 
@@ -141,13 +145,20 @@ ipcMain.on('startProcess', (event, args) => {
           row.commit();
         }
 
+        let arr_fixed = [];
+
+        for(let i = 10; i < 50; i++) {
+          arr_fixed.push(i);
+        }
+
         for (let i = 1; i <= worksheet.rowCount; i++) {
           let row = worksheet.getRow(i);
           let value = String(row.getCell(1).value);
           let length = String(row.getCell(1).value).length;
 
-          if (length <= 7) {
-            worksheet.spliceRows(i, 1)
+          if (length <= 7 || length == 12 && arr_fixed.indexOf(Number(value.substr(4, 2))) > -1) {
+            worksheet.spliceRows(i, 1);
+            i = 1;
           }
         }
         dialog.showSaveDialog({
