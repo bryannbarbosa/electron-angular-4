@@ -3,13 +3,6 @@ import * as electron from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 
-if(require('electron-squirrel-startup')) app.quit();
-
-if (handleSquirrelEvent()) {
-  // squirrel event handled and app will exit in 1000ms, so don't do anything else
-  app.quit()
-}
-
 const Excel = require('exceljs');
 const ipcMain = electron.ipcMain;
 const dialog = electron.dialog;
@@ -165,7 +158,7 @@ ipcMain.on('startProcess', (event, args) => {
           let value = String(row.getCell(1).value);
           let length = String(row.getCell(1).value).length;
 
-          if (length <= 7 || length == 12 && arr_fixed.indexOf(Number(value.substr(4, 2))) > -1) {
+          if (length <= 7 || length == 12 && arr_fixed.indexOf(Number(value.substr(4, 2))) > -1 || length > 13) {
             worksheet.spliceRows(i, 1);
             i = 1;
           }
@@ -181,65 +174,3 @@ ipcMain.on('startProcess', (event, args) => {
       });
   });
 });
-
-function handleSquirrelEvent() {
-  if (process.argv.length === 1) {
-    return false;
-  }
-
-  const ChildProcess = require('child_process');
-  const path = require('path');
-
-  const appFolder = path.resolve(process.execPath, '..');
-  const rootAtomFolder = path.resolve(appFolder, '..');
-  const updateDotExe = path.resolve(path.join(rootAtomFolder, 'Update.exe'));
-  const exeName = path.basename(process.execPath);
-
-  const spawn = function(command, args) {
-    let spawnedProcess, error;
-
-    try {
-      spawnedProcess = ChildProcess.spawn(command, args, {detached: true});
-    } catch (error) {}
-
-    return spawnedProcess;
-  };
-
-  const spawnUpdate = function(args) {
-    return spawn(updateDotExe, args);
-  };
-
-  const squirrelEvent = process.argv[1];
-  switch (squirrelEvent) {
-    case '--squirrel-install':
-    case '--squirrel-updated':
-      // Optionally do things such as:
-      // - Add your .exe to the PATH
-      // - Write to the registry for things like file associations and
-      //   explorer context menus
-
-      // Install desktop and start menu shortcuts
-      spawnUpdate(['--createShortcut', exeName]);
-
-      setTimeout(app.quit, 1000);
-      return true;
-
-    case '--squirrel-uninstall':
-      // Undo anything you did in the --squirrel-install and
-      // --squirrel-updated handlers
-
-      // Remove desktop and start menu shortcuts
-      spawnUpdate(['--removeShortcut', exeName]);
-
-      setTimeout(app.quit, 1000);
-      return true;
-
-    case '--squirrel-obsolete':
-      // This is called on the outgoing version of your app before
-      // we update to the new version - it's the opposite of
-      // --squirrel-updated
-
-      app.quit();
-      return true;
-  }
-};
